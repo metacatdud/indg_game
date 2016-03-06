@@ -31,7 +31,7 @@ window['Game'] = (function () {
                 itemsLeft: 20
             }
         },
-        AILevel = 'master';
+        AILevel = 'master'; // dummy/normal/master
 
     /**
      * Install game component
