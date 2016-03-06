@@ -58,7 +58,7 @@
                 <hr>
             </div>
             <div class="game_controllers pure-u-5-5">
-                <button data-target="app.restart" class="pure-button button-secondary">Restart</button>
+                <button data-target="restart.game" class="pure-button button-secondary">Restart</button>
                 <button data-target="app.exit" class="pure-button button-success">Exit</button>
                 <button data-target="app.help" class="pure-button button-success">Help</button>
             </div>
@@ -67,16 +67,24 @@
         <!--Help page-->
         <div data-name="help" data-type="page" class="pure-u-1 pure-u-md-3-4">
             <div class="pure-u-5-5">
-                <p>//add help instructions here</p>
+                <h2>Game rules</h2>
+                <ul>
+                    <li>You can draw 1 to 3 sticks from the pile</li>
+                    <li>If only one stick left next player loses</li>
+                    <li>If you accidentally draw the last stick you lose</li>
+                </ul>
             </div>
             <div class="pure-u-5-5"></div>
             <div class="pure-u-5-5">
                 <hr>
+            </div>
+            <div class="pure-u-5-5 menu_buttons">
                 <button class="pure-button" data-target="app.back" data-params="home.page">back</button>
             </div>
         </div>
     </div>
 
+    <script src="app/tools.js"></script>
     <script src="app/events.js"></script>
     <script src="app/game.js"></script>
     <script src="app/player.js"></script>

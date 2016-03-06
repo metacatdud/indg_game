@@ -10,6 +10,7 @@ window['Game'] = (function () {
     var Game = {
             _dom: null,
             events: {},
+            isBusy: false,
             running: false,
             players: {
                 p1: {},
@@ -18,7 +19,8 @@ window['Game'] = (function () {
             },
             monitor: {
                 output: ''
-            }
+            },
+            type: false
         },
         SinglePlayer = {},
         MultiPlayer = {},
@@ -28,7 +30,8 @@ window['Game'] = (function () {
                 items: 20,
                 itemsLeft: 20
             }
-        };
+        },
+        AILevel = 'master';
 
     /**
      * Install game component
@@ -36,7 +39,9 @@ window['Game'] = (function () {
     Game.install = function () {
         Events.register('start.game', Game.events.start);
         Events.register('reset.game', Game.events.reset);
+        Events.register('restart.game', Game.events.restart);
         Events.register('draw.board', Game.events.drawBoard);
+        Events.register('setbusy.game', Game.events.setBusy);
 
         Events.register('set.players', Game.events.setPlayers);
         Events.register('unset.players', Game.events.unsetPlayers);
@@ -53,13 +58,6 @@ window['Game'] = (function () {
      */
     Game.turn = function (itemsExit) {
         var result = 0;
-
-        /**
-         * TODO
-         * Check moves left
-         * Check game end
-         * Settle winner if case
-         */
 
         /**
          * Update items left
@@ -89,7 +87,7 @@ window['Game'] = (function () {
      * @param {String} type
      */
     Game.events.start = function (type) {
-        console.debug('start game::', type, Game.running);
+        console.debug('[Game][start]::', type);
         /**
          * Avoid spamming
          */
@@ -109,6 +107,16 @@ window['Game'] = (function () {
         Board.itemsLeft = Board.defaults.itemsLeft;
 
         /**
+         * Set game type
+         */
+        Game.type = type;
+
+        /**
+         * Unbusy
+         */
+        Events.trigger('setbusy.game', false);
+
+        /**
          * Draw bord and start the game
          */
         Events.trigger('draw.board');
@@ -119,7 +127,7 @@ window['Game'] = (function () {
      * @event
      * Stop and reset game module
      */
-    Game.events.reset = function () {
+    Game.events.reset = function (restart) {
         /**
          * Rest game dom
          */
@@ -131,6 +139,13 @@ window['Game'] = (function () {
          */
         delete Board.items;
         delete Board.itemsLeft;
+
+        /**
+         * On restart keep game type
+         */
+        if(undefined !== restart && false === restart) {
+            Game.type = false;
+        }
 
         /**
          * Reset players
@@ -148,7 +163,15 @@ window['Game'] = (function () {
      * Game restart
      */
     Game.events.restart = function () {
-        //restart game
+        Events.trigger('reset.game', true);
+        Events.trigger('start.game', Game.type);
+    };
+
+    /**
+     * Set game busy flag
+     */
+    Game.events.setBusy = function (isBusy) {
+        Game.isBusy = isBusy;
     };
 
     /**
@@ -173,6 +196,9 @@ window['Game'] = (function () {
 
         Game._dom.find('.game_board .content').html(output);
 
+        /**
+         * Everything look good. Draw the board
+         */
         Events.trigger('app.activeScreen', 'board.page');
     };
 
@@ -194,6 +220,9 @@ window['Game'] = (function () {
 
         Game.players.p1 = {};
         Game.players.p2 = {};
+        Game.players.next = 'p1';
+
+        Events.trigger('ai.reset');
     };
 
     /**
@@ -204,6 +233,13 @@ window['Game'] = (function () {
             i_take,
             tmpItem,
             turnResult;
+
+        /**
+         * More buttons spamming check
+         */
+        if(true === Game.isBusy) {
+            return false;
+        }
 
         /**
          * Decide next player
@@ -230,19 +266,30 @@ window['Game'] = (function () {
             Game.players.next = nextPlayer;
 
             /**
+             * Check if is AI
+             */
+            if(true === Game.players[nextPlayer].isAI) {
+                Events.trigger('ai.move', Board.itemsLeft);
+            }
+
+
+            /**
              * Write to monitor
              */
-            Events.trigger('game.monitor', '<p>Turn: '+ Game.players.next +'</p>');
+            Events.trigger('game.monitor', '<p>Next is: '+ Game.players[Game.players.next].nickname +'</p>');
+            Events.trigger('game.monitor', '<p>Items left: '+ Board.itemsLeft +'</p>');
         }
 
         if(1 === turnResult) {
-            Events.trigger('game.monitor', '<p>Player: ['+ nextPlayer +'] Win!</p>');
-            Events.trigger('game.monitor', '<p>Player: ['+ Game.players.next +'] Lost!</p>');
+            Events.trigger('game.monitor', '<p>Player: ['+ Game.players[nextPlayer].nickname +'] Win!</p>');
+            Events.trigger('game.monitor', '<p>Player: ['+ Game.players[Game.players.next].nickname +'] Lost!</p>');
+            Events.trigger('setbusy.game', true);
         }
 
         if(2 === turnResult) {
-            Events.trigger('game.monitor', '<p>Player: ['+ Game.players.next +'] Win!</p>');
-            Events.trigger('game.monitor', '<p>Player: ['+ nextPlayer +'] Lost!</p>');
+            Events.trigger('game.monitor', '<p>Player: ['+ Game.players[Game.players.next].nickname +'] Win!</p>');
+            Events.trigger('game.monitor', '<p>Player: ['+ Game.players[nextPlayer].nickname +'] Lost!</p>');
+            Events.trigger('setbusy.game', true);
         }
     };
 
@@ -253,6 +300,10 @@ window['Game'] = (function () {
         Game.monitor.output += message;
 
         Game._dom.find('[data-name="monitor"] .content').append(message);
+
+        Game._dom.find('[data-name="monitor"] .content').animate({
+            scrollTop: Game._dom.find('[data-name="monitor"] .content p').last().offset().top
+        });
     };
 
     /**
@@ -267,7 +318,7 @@ window['Game'] = (function () {
 
         player_1 = new Player.Instance('p1');
         player_2 = new Player.Instance('p2');
-        player_2.setAsAI();
+        player_2.setAsAI(AILevel);
 
         Events.trigger('set.players', {
             p1: player_1,
