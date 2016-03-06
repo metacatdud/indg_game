@@ -12,7 +12,7 @@ window['Player'] = (function () {
      */
     var Player = {},
         AI = {
-            _level: 'dummy', // dummy, normal, gore
+            _level: 'dummy', // dummy, normal, master
             events: {},
             strategy: {},
             thinking: false
@@ -43,10 +43,9 @@ window['Player'] = (function () {
 
     /**
      * How many will AI draw
-     * @param count
+     * @param {Number} itemsLeft
      */
     AI.events.move = function (itemsLeft) {
-        console.debug('AI move. Items left::', itemsLeft);
         Events.trigger('setbusy.game', true);
         AI.strategy[AI._level].call(AI.strategy[AI._level], itemsLeft);
     };
@@ -60,11 +59,19 @@ window['Player'] = (function () {
         }
     };
 
+    /**
+     * Set AI level
+     * @param level
+     */
     AI.setLevel = function (level) {
-        console.debug('[Player][AI][Level]::', level);
+        console.debug('[Player][AI][Set Level]::', level);
         AI._level = level;
     };
 
+    /**
+     * Fake thinking to give more of a human touch
+     * @param {Object} aiMove
+     */
     AI.thinkMove = function(aiMove) {
         AI.thinking = setTimeout(function() {
 
@@ -105,16 +112,17 @@ window['Player'] = (function () {
 
     /**
      * normal level - Will act as regular player
-     * @param itemsLeft
+     * @param {Number} itemsLeft
      */
     AI.strategy.normal = function (itemsLeft) {
         var luck = AI.random(1,100), //Go 50/50
             draw,
-            think = AI.random(7, 30);
+            think;
+
+        draw = AI.random(1,3);
+        think = AI.random(7, 30);
 
         if(50 < luck) {
-            console.debug('Smart move');
-            draw = AI.random(1,3);
 
             if(7 === itemsLeft) {
                 draw = 2
@@ -128,7 +136,6 @@ window['Player'] = (function () {
                 draw = (itemsLeft - 1);
             }
         } else {
-            console.debug('Lucky move');
             if(6 >= itemsLeft && 3 < itemsLeft) {
                 draw = AI.random(1, 2);
             }

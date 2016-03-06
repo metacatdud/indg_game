@@ -29,12 +29,6 @@ window['App'] = (function () {
      * Init application
      */
     App.init = function () {
-        /**
-         * player
-         * game
-         * dom
-         * score
-         */
         UI.show('menu', 'page');
         App.activeScreen = 'menu.page';
     };
@@ -43,12 +37,6 @@ window['App'] = (function () {
      * Reset application
      */
     App.reset = function () {
-        /**
-         * game reset - done
-         * score reset
-         * player reset
-         * dom reset - done
-         */
         var currentScreen;
 
         currentScreen = App.activeScreen.split('.');
@@ -79,15 +67,17 @@ window['App'] = (function () {
 
     /**
      * @event
-     * @param {String} destination
      * Back button event
+     * @param {String} destination
      */
     App.events.goBack = function (destination) {
         Events.trigger('app.activeScreen', destination);
     };
 
     /**
+     * @event
      * Set active screen
+     * @param {String} screenName
      */
     App.events.setScreen = function (screenName) {
         var currentScreen,

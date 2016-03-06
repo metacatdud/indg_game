@@ -24,10 +24,10 @@ window['Events'] = (function () {
 
     /**
      * Trigger event
+     * @param {String} name
      */
     Events.trigger = function (name) {
         var args = [],
-            params,
             i_args;
 
         for(i_args = 1; i_args < arguments.length; i_args +=1) {

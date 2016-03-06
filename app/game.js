@@ -87,7 +87,9 @@ window['Game'] = (function () {
      * @param {String} type
      */
     Game.events.start = function (type) {
+
         console.debug('[Game][start]::', type);
+
         /**
          * Avoid spamming
          */
@@ -128,6 +130,7 @@ window['Game'] = (function () {
      * Stop and reset game module
      */
     Game.events.reset = function (restart) {
+
         /**
          * Rest game dom
          */
@@ -197,7 +200,7 @@ window['Game'] = (function () {
         Game._dom.find('.game_board .content').html(output);
 
         /**
-         * Everything look good. Draw the board
+         * Everything looks good. Draw the board
          */
         Events.trigger('app.activeScreen', 'board.page');
     };
