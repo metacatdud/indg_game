@@ -15,14 +15,19 @@ window['Game'] = (function () {
                 p1: {},
                 p2: {},
                 next: 'p1'
+            },
+            monitor: {
+                output: ''
             }
         },
         SinglePlayer = {},
         MultiPlayer = {},
         Board = {
-            items: 20,
-            itemsLeft: 20,
-            _itemDom: '<div class="item" data-name="game.item" data-type="item"></div>'
+            _itemDom: '<div class="item" data-name="game.item" data-type="item"></div>',
+            defaults: {
+                items: 20,
+                itemsLeft: 20
+            }
         };
 
     /**
@@ -32,11 +37,51 @@ window['Game'] = (function () {
         Events.register('start.game', Game.events.start);
         Events.register('reset.game', Game.events.reset);
         Events.register('draw.board', Game.events.drawBoard);
+
         Events.register('set.players', Game.events.setPlayers);
+        Events.register('unset.players', Game.events.unsetPlayers);
 
         Events.register('game.takeItem', Game.events.takeItem);
 
+        Events.register('game.monitor', Game.events.writeToMonitor);
+
         Game._dom = $('[data-name="board"][data-type="page"]');
+    };
+
+    /**
+     * Check current game status
+     */
+    Game.turn = function (itemsExit) {
+        var result = 0;
+
+        /**
+         * TODO
+         * Check moves left
+         * Check game end
+         * Settle winner if case
+         */
+
+        /**
+         * Update items left
+         */
+        Board.itemsLeft = Board.itemsLeft - itemsExit;
+
+        /**
+         * Current user looses
+         */
+        if(0 >= Board.itemsLeft) {
+            result = 1;
+        }
+
+        /**
+         * Next user looses
+         */
+        if(1 === Board.itemsLeft) {
+            result = 2;
+        }
+
+        return result;
+
     };
 
     /**
@@ -59,6 +104,15 @@ window['Game'] = (function () {
         if('multi' === type) {
             MultiPlayer.init();
         }
+
+        Board.items = Board.defaults.items;
+        Board.itemsLeft = Board.defaults.itemsLeft;
+
+        /**
+         * Draw bord and start the game
+         */
+        Events.trigger('draw.board');
+        Game.running = true;
     };
 
     /**
@@ -66,7 +120,35 @@ window['Game'] = (function () {
      * Stop and reset game module
      */
     Game.events.reset = function () {
+        /**
+         * Rest game dom
+         */
+        Game._dom.find('.game_board .content').html($());
+        Game._dom.find('[data-name="monitor"] .content').html($());
+
+        /**
+         * Reset board settings
+         */
+        delete Board.items;
+        delete Board.itemsLeft;
+
+        /**
+         * Reset players
+         */
+        Events.trigger('unset.players');
+
+        /**
+         * Allow new game
+         */
         Game.running = false;
+    };
+
+    /**
+     * @event
+     * Game restart
+     */
+    Game.events.restart = function () {
+        //restart game
     };
 
     /**
@@ -106,10 +188,22 @@ window['Game'] = (function () {
     };
 
     /**
+     * Unset players
+     */
+    Game.events.unsetPlayers = function () {
+
+        Game.players.p1 = {};
+        Game.players.p2 = {};
+    };
+
+    /**
      * Game item take
      */
     Game.events.takeItem = function (count) {
-        var nextPlayer;
+        var nextPlayer,
+            i_take,
+            tmpItem,
+            turnResult;
 
         /**
          * Decide next player
@@ -119,13 +213,46 @@ window['Game'] = (function () {
         /**
          * Set move
          */
-        console.debug('Player', Game.players.next, 'Draw:', count);
+        for(i_take = 0; i_take < count; i_take += 1) {
+            tmpItem = (Board.itemsLeft - i_take);
 
-        /**
-         * Count items left
-         */
+            Game._dom.find('[data-name="game.item"][data-value="'+ tmpItem +'"]')
+                .addClass('inactive')
+                .removeClass('active');
+        }
 
-        Game.players.next = nextPlayer;
+        turnResult = Game.turn(count);
+
+        if(0 === turnResult) {
+            /**
+             * Set next player
+             */
+            Game.players.next = nextPlayer;
+
+            /**
+             * Write to monitor
+             */
+            Events.trigger('game.monitor', '<p>Turn: '+ Game.players.next +'</p>');
+        }
+
+        if(1 === turnResult) {
+            Events.trigger('game.monitor', '<p>Player: ['+ nextPlayer +'] Win!</p>');
+            Events.trigger('game.monitor', '<p>Player: ['+ Game.players.next +'] Lost!</p>');
+        }
+
+        if(2 === turnResult) {
+            Events.trigger('game.monitor', '<p>Player: ['+ Game.players.next +'] Win!</p>');
+            Events.trigger('game.monitor', '<p>Player: ['+ nextPlayer +'] Lost!</p>');
+        }
+    };
+
+    /**
+     * Write to game monitor
+     */
+    Game.events.writeToMonitor = function(message) {
+        Game.monitor.output += message;
+
+        Game._dom.find('[data-name="monitor"] .content').append(message);
     };
 
     /**
@@ -146,12 +273,6 @@ window['Game'] = (function () {
             p1: player_1,
             p2: player_2
         });
-
-        /**
-         * Draw bord and start the game
-         */
-        Events.trigger('draw.board');
-        Game.running = true;
     };
 
 
@@ -172,11 +293,6 @@ window['Game'] = (function () {
             p2: player_2
         });
 
-        /**
-         * Draw bord and start the game
-         */
-        Events.trigger('draw.board');
-        Game.running = true;
     };
 
     /**

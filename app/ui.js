@@ -49,7 +49,7 @@ window['UI'] = (function () {
      * select
      * @param name
      * @param type
-     * @return {jQuery}
+     * @return {$}
      */
     UI.select = function (name, type, selector) {
 
@@ -70,7 +70,7 @@ window['UI'] = (function () {
         element.on(action, function(e) {
             eventHeader = $(e.currentTarget).data('target');
             eventParams = $(e.currentTarget).data('params');
-            console.debug('Custom binded::', eventHeader, eventParams);
+            //console.debug('Custom binded::', eventHeader, eventParams);
             Events.trigger(eventHeader, eventParams);
         });
     };
@@ -85,7 +85,7 @@ window['UI'] = (function () {
         $('[data-target]').on('click', function(e) {
             eventHeader = $(e.currentTarget).data('target');
             eventParams = $(e.currentTarget).data('params');
-            console.debug('Click::', eventHeader, eventParams);
+            //console.debug('Click::', eventHeader, eventParams);
             Events.trigger(eventHeader, eventParams);
         });
 

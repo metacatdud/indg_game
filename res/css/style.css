@@ -49,6 +49,27 @@ Game board
     display: inline-block;
 }
 
+[data-name="monitor"] {
+    text-align: center;
+
+}
+
+[data-name="monitor"] .content {
+    font-family: monospace;
+    font-size: 14px;
+
+    text-align: left;
+    line-height: 0.5;
+    background: #d9d9d9;
+    padding: 5px;
+
+    display: inline-block;
+    position: relative;
+    height: 200px;
+    width: 600px;
+    overflow: auto;
+}
+
 /** Pure CSS overwrites **/
 .button-success,
 .button-error,
