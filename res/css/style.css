@@ -1,0 +1,76 @@
+/** Game CSS **/
+
+[data-type="page"] {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
+/**
+Main menu
+**/
+.menu_title {
+    text-align: center;
+}
+.menu_buttons {
+    text-align: center;
+}
+
+/**
+Game board
+**/
+.item {
+    width: 20px;
+    height: 100px;
+    border: 1px solid;
+    display: block;
+    float: left;
+    margin-left: 15px;
+}
+
+.item.active {
+    background: #000;
+}
+
+.item.inactive {
+    background: #d9d9d9;
+}
+
+.game_players,
+.game_board,
+.game_controllers {
+    text-align: center;
+}
+
+.game_board .content {
+    position: relative;
+    display: inline-block;
+}
+
+/** Pure CSS overwrites **/
+.button-success,
+.button-error,
+.button-warning,
+.button-secondary {
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-success {
+    background: #1CB841; /* this is a green */
+}
+
+.button-error {
+    background: #CA3C3C; /* this is a maroon */
+}
+
+.button-warning {
+    background: #DF7514; /* this is an orange */
+}
+
+.button-secondary {
+    background: #42B8DD; /* this is a light blue */
+}

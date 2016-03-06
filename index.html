@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link rel="stylesheet" href="res/css/style.css">
+
+    <title>Sticks gane</title>
+</head>
+<body>
+    <div data-name="app" class="pure-g">
+        <!--Menu page-->
+        <div data-name="menu" data-type="page" class="pure-u-1 pure-u-md-3-4">
+            <div class="pure-u-5-5 menu_title">The Awesome sticks game!</div>
+            <div class="pure-u-5-5"></div>
+            <div class="menu_buttons pure-u-5-5">
+                <button data-target="start.game" data-params="single" class="pure-button">1 player</button>
+                <button data-target="start.game" data-params="multi" class="pure-button">2 players</button>
+            </div>
+            <div class="pure-u-5-5"></div>
+            <div class="menu_buttons pure-u-5-5">
+                <button data-target="app.help" class="pure-button button-success">Help</button>
+            </div>
+
+        </div>
+
+        <!--Game page-->
+        <div data-name="board" data-type="page" class="pure-u-1 pure-u-md-3-4">
+            <div class="game_players pure-u-5-5">
+                <div class="player_1" data-name="player_1" data-type="player"></div>
+                <div class="player_2" data-name="player_2" data-type="player"></div>
+            </div>
+            <div class="pure-u-5-5"></div>
+            <div class="game_board pure-u-5-5">
+                <div class="content"></div>
+            </div>
+            <div class="pure-u-5-5"></div>
+            <div class="game_controllers pure-u-5-5">
+                <button class="pure-button" data-target="game.takeItem" data-params="1"> Draw 1</button>
+                <button class="pure-button" data-target="game.takeItem" data-params="2"> Draw 2</button>
+                <button class="pure-button" data-target="game.takeItem" data-params="3"> Draw 3</button>
+            </div>
+            <div class="pure-u-5-5"></div>
+            <div class="game_controllers pure-u-5-5">
+                <button data-target="app.help" class="pure-button button-success">Help</button>
+                <button data-target="app.exit" class="pure-button button-success">Exit</button>
+            </div>
+        </div>
+
+        <!--Help page-->
+        <div data-name="help" data-type="page" class="pure-u-1 pure-u-md-3-4">
+            <div class="pure-u-5-5">
+                <p>//add help instructions here</p>
+            </div>
+            <div class="pure-u-5-5"></div>
+            <div class="pure-u-5-5">
+                <hr>
+                <button class="pure-button" data-target="app.back" data-params="home.page">back</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app/events.js"></script>
+    <script src="app/game.js"></script>
+    <script src="app/player.js"></script>
+    <script src="app/ui.js"></script>
+    <script src="app/app.js"></script>
+    <script src="app/boot.js"></script>
+</body>
+</html>
